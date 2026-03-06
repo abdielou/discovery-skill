@@ -1,0 +1,12 @@
+{
+  "name": "discovery",
+  "description": "Guided discovery sessions with structured facilitation, first-principles decomposition, and persistent notes.",
+  "version": "1.0.0",
+  "author": {
+    "name": "abdielou"
+  },
+  "repository": "https://github.com/abdielou/discovery-skill",
+  "commands": [
+    "./skills/discovery/discovery.md"
+  ]
+}

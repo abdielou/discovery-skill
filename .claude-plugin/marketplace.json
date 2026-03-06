@@ -1,0 +1,18 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "abdielou-discovery-skill",
+  "owner": {
+    "name": "abdielou"
+  },
+  "plugins": [
+    {
+      "name": "discovery",
+      "description": "Guided discovery sessions with structured facilitation, first-principles decomposition, and persistent notes.",
+      "source": "./",
+      "version": "1.0.0",
+      "author": {
+        "name": "abdielou"
+      }
+    }
+  ]
+}
