@@ -31,13 +31,16 @@ Compaction solves this by splitting notes into **topic-focused files** while mai
 
 ### Lossless guarantee
 
-1. **Every item** (F#, D#, A#, C#, Q#, P#, X#, E#) must appear in exactly one output file
-2. **All metadata** (rationale, confidence, status, cross-references, tags, derived-from chains) must be preserved verbatim
-3. **Design Intent** and **latest Checkpoint** are preserved in the index file
-4. **Checkpoint Archive** entries are all preserved
-5. **Scope** (In/Out) is preserved in the index file
-6. **Context & References** are preserved
-7. After compaction, `grep` for any item ID (e.g., `D14`) across all output files must return the same content as in the original
+No facts or rules may be lost. Compaction may consolidate (merge duplicates, compact resolved items) but never discard information.
+
+1. **Every item** (F#, D#, A#, C#, Q#, P#, X#, E#) must either appear in an output file or be accounted for in the Consolidation Log with a clear merge target
+2. **All active metadata** (rationale, confidence, status, cross-references, tags, derived-from chains) must be preserved — only metadata made redundant by consolidation (e.g., "impact if wrong" on a validated assumption) may be dropped
+3. **Superseded decisions** are preserved in a `### Superseded` subsection — not deleted, just separated from active decisions
+4. **Design Intent** and **latest Checkpoint** are preserved in the index file
+5. **Checkpoint Archive** entries are all preserved
+6. **Scope** (In/Out) is preserved in the index file
+7. **Context & References** are preserved
+8. After compaction, `grep` for any item ID (e.g., `D14`) across all output files or the Consolidation Log must return a result
 
 ### Organization strategy
 
@@ -73,14 +76,54 @@ Items are organized by **topic tag** — the `[tag]` labels already on every ite
 3. If the file is already compacted (has `## Compacted: yes` in the index), tell the user notes are already compacted and ask if they want to re-compact (useful if new items were appended since last compaction)
 4. Parse all sections and items, preserving every line
 
-### Step 2 — Extract topic tags
+### Step 2 — Consolidation analysis
 
-1. Scan all items for topic tags (`[tag]` patterns)
+Before splitting into files, reason through all items to consolidate and de-duplicate. This is the intelligence step — not just structural reorganization but semantic compression.
+
+#### 2a — Identify duplicates and near-duplicates
+
+Scan all items across all buckets for:
+- **Exact duplicates** — same fact recorded under different IDs (e.g., D3 and D15 say the same thing). Keep the one with richer metadata; drop the other and record a mapping (e.g., "D15 merged into D3").
+- **Near-duplicates** — two items that express the same underlying fact with different wording (e.g., A2: "Users won't exceed 10k" and C4: "System must handle up to 10k users"). Merge into a single item, preserving the richer metadata and the stricter bucket classification (a Constraint outranks an Assumption if both say the same thing). Record the merge.
+- **Superseded chains** — decisions that have been superseded (D2 `Supersedes: D1`). Keep the final decision in the active section; move the superseded one into a `### Superseded` subsection in the same topic file so history is preserved but clearly separated from current state.
+
+#### 2b — Consolidate resolved items
+
+- **Resolved questions** — questions that are struck through (`~~Q3~~ → D12`) can be collapsed: keep only the cross-reference line (`~~Q3~~ Resolved → D12`) rather than preserving the full question context, since the answer lives in the linked decision.
+- **Validated assumptions** — assumptions marked `validated` can be converted to a compact one-liner retaining the original ID, statement, and validation note, dropping the "impact if wrong" since it's no longer relevant.
+- **Invalidated assumptions** — keep full detail since the linked decision (e.g., `invalidated → D8`) needs the context of what was wrong and why.
+
+#### 2c — Tighten cross-references
+
+- Walk all `Decisions anchored:` lists in Fundamentals and verify they're up to date — add any decisions that reference a fundamental but aren't listed, remove references to superseded decisions.
+- Walk all `Impact if wrong:` entries in Assumptions and verify the listed decisions still exist and haven't been superseded.
+- Walk all `Supersedes:` chains in Decisions and verify they're consistent — no circular supersession, no references to nonexistent IDs.
+
+#### 2d — Record consolidation log
+
+Create a consolidation summary to include in the index file:
+
+```markdown
+## Consolidation Log
+
+- D15 merged into D3 (duplicate: both specified REST for public API)
+- A2 merged into C4 (assumption promoted to constraint: 10k user cap)
+- D1 moved to superseded (superseded by D2)
+- ~~Q3~~ collapsed (resolved → D12)
+- A5 compacted (validated)
+- F2 `Decisions anchored` updated: added D14, removed D1 (superseded)
+```
+
+This log ensures the compaction is auditable — anyone can trace what changed.
+
+### Step 3 — Extract topic tags
+
+1. Scan all remaining items (post-consolidation) for topic tags (`[tag]` patterns)
 2. Build a map: `tag → list of items`
 3. Identify items with no tags → assign to `general`
 4. Identify items with multiple tags → primary tag is the first listed, cross-reference the rest
 
-### Step 3 — Write output files
+### Step 4 — Write output files
 
 Write each file with clear headers and complete content. Use the formats below.
 
@@ -132,6 +175,17 @@ Write each file with clear headers and complete content. Use the formats below.
 - D2, D4-D6 → `topics/{tag2}.md`
 - A1, A3 → `topics/{tag1}.md`
 - ...
+
+## Consolidation Log
+
+(What was merged, collapsed, or reorganized during compaction — ensures auditability)
+
+- D15 merged into D3 (duplicate: both specified REST for public API)
+- A2 merged into C4 (assumption promoted to constraint: 10k user cap)
+- D1 moved to superseded (superseded by D2)
+- ~~Q3~~ collapsed (resolved → D12)
+- A5 compacted (validated)
+- F2 `Decisions anchored` updated: added D14, removed D1 (superseded)
 ```
 
 #### Fundamentals file (`fundamentals.md`)
@@ -161,6 +215,14 @@ Items related to [{tag}].
   Why: rationale
   Rejected: alternatives considered
   Confidence: firm
+  ...
+
+### Superseded
+
+(Decisions that have been replaced by newer ones — kept for history, not active.)
+
+- **D1** [tag] Original decision statement (superseded by D2)
+  Why: original rationale
   ...
 
 ## Assumptions
@@ -234,17 +296,19 @@ For **cross-referenced items** (items whose primary tag is different), add a ref
 ### CP2 — ...
 ```
 
-### Step 4 — Verify
+### Step 5 — Verify
 
 After writing all files:
-1. Count total items in output files and compare to original — must match
-2. Spot-check: pick 3 random item IDs and verify they appear in the correct output file with full metadata
-3. Report to the user: "Compacted {n} items across {m} topic files. All items preserved."
+1. Count total unique items in output files — every original item must be accounted for (either present in an output file, or listed in the Consolidation Log as merged/collapsed)
+2. Verify no item ID is orphaned — every ID from the original either exists in an output file or has a merge entry in the Consolidation Log
+3. Spot-check: pick 3 random item IDs and verify they appear in the correct output file with full metadata
+4. Verify cross-reference integrity — every `↗` pointer in topic files points to an existing file and item
 
-### Step 5 — Summary
+### Step 6 — Summary
 
 Tell the user:
-- How many items were compacted
+- How many items were compacted and how many remain after consolidation
+- What was consolidated (summarize the Consolidation Log)
 - How many topic files were created
 - The file map (which topics have which items)
 - Remind them that `/discovery {topic}` will automatically read the compacted structure on next session
