@@ -7,6 +7,7 @@
   },
   "repository": "https://github.com/abdielou/discovery-skill",
   "commands": [
-    "./skills/discovery/discovery.md"
+    "./skills/discovery/discovery.md",
+    "./skills/discovery/compact-notes.md"
   ]
 }

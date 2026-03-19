@@ -133,9 +133,12 @@ Then proceed to the core facilitation loop. During the session, periodically che
 ## Session Continuity
 
 If continuing a previous session:
-1. Read the existing notes file
-2. Summarize: design intent, open questions, recent decisions, parking lot items, assumptions to verify
-3. Ask the explorer where they want to pick up
+1. Read the existing notes file at `.planning/discovery/{topic}/{topic}-notes.md`
+2. Check if notes are compacted (`## Compacted: yes` in the index file)
+   - **If compacted:** Read the index file for Design Intent, Checkpoint, Scope, and file map. Read `fundamentals.md` for foundational truths. Read topic files on-demand based on what the explorer wants to discuss — don't load all topic files at once. When recording new items, write to the appropriate topic file and update the index.
+   - **If not compacted:** Read the full notes file as before.
+3. Summarize: design intent, open questions, recent decisions, parking lot items, assumptions to verify
+4. Ask the explorer where they want to pick up
 
 ## Session Wrap-Up
 

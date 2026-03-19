@@ -159,6 +159,53 @@
 - Present both sides neutrally: "D3 says X, but what you just said implies Y"
 - The explorer resolves — you record the resolution
 
+## Compacted Format
+
+When notes grow large, they can be compacted via `/compact-notes {topic}` into multiple files for better retrieval and reduced context. Compaction is **lossless** — every item is preserved.
+
+### Compacted directory structure
+
+```
+.planning/discovery/{topic}/
+├── {topic}-notes.md          ← Index file (Design Intent, Checkpoint, Scope, file map, ID quick reference)
+├── fundamentals.md           ← All F# entries (cross-cutting anchors)
+├── topics/
+│   ├── {tag1}.md             ← All items tagged [tag1], organized by bucket
+│   ├── {tag2}.md             ← All items tagged [tag2], organized by bucket
+│   └── general.md            ← Items with no topic tag
+├── experts.md                ← Expert Agents registry
+├── references.md             ← Context & References
+└── checkpoint-archive.md     ← Archived checkpoints
+```
+
+### How to detect compacted notes
+
+The index file (`{topic}-notes.md`) contains `## Compacted: yes` when notes have been compacted.
+
+### Reading compacted notes
+
+When continuing a session with compacted notes:
+1. Read `{topic}-notes.md` (index) for Design Intent, Checkpoint, Scope, and file map
+2. Read `fundamentals.md` for the foundational truths
+3. Read topic files on-demand based on what the explorer wants to discuss
+4. Don't read all topic files at once — the point of compaction is to reduce context
+
+### Writing to compacted notes
+
+When adding new items during a session with compacted notes:
+- Write new items to the appropriate topic file under `topics/`
+- New fundamentals go to `fundamentals.md`
+- Update the index file's ID Quick Reference and item counts
+- If a new topic tag appears, create a new `topics/{tag}.md` file
+
+### Cross-referenced items
+
+Items with multiple topic tags live in their primary tag's file (first tag listed). Other tag files contain a cross-reference pointer:
+
+```markdown
+- ↗ **D5** also tagged [{this-tag}] — see `topics/{primary-tag}.md`
+```
+
 ## Why This Structure
 
 1. **Append-only workflow**: adding an item = add a bullet. No table columns to maintain.
