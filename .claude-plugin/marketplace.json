@@ -9,7 +9,7 @@
       "name": "discovery",
       "description": "Guided discovery sessions with structured facilitation, first-principles decomposition, and persistent notes.",
       "source": "./",
-      "version": "1.1.0",
+      "version": "1.2.0",
       "author": {
         "name": "abdielou"
       }

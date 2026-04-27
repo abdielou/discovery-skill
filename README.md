@@ -1,10 +1,12 @@
-# Discovery Skill for Claude Code
+# Discovery Skill
 
 A structured facilitation skill that guides discovery sessions with first-principles decomposition, persistent notes, and background expert agents.
 
+Compatible with **Claude Code** and **OpenCode**.
+
 ## What it does
 
-The `/discovery` command turns Claude into a **Facilitator** for structured thinking sessions. You (the Explorer) own the substance — domain knowledge, decisions, priorities. Claude owns the process — pacing, transitions, completeness checks, synthesis.
+The discovery skill turns the AI into a **Facilitator** for structured thinking sessions. You (the Explorer) own the substance — domain knowledge, decisions, priorities. The AI owns the process — pacing, transitions, completeness checks, synthesis.
 
 ### Key features
 
@@ -18,36 +20,34 @@ The `/discovery` command turns Claude into a **Facilitator** for structured thin
 
 ## Installation
 
-### Plugin Marketplace (recommended)
+### Claude Code
 
-**Interactive:**
-
-```
-/plugin
-```
-
-Go to the Marketplaces tab, add `abdielou/discovery-skill`, then switch to the Discover tab and install.
-
-**CLI:**
+**Plugin Marketplace (recommended):**
 
 ```
 /plugin marketplace add abdielou/discovery-skill
 /plugin install discovery@abdielou-discovery-skill
 ```
 
-### Manual (git clone)
-
-**User-level** (available in all projects):
+**Manual:**
 
 ```bash
 git clone https://github.com/abdielou/discovery-skill.git ~/.claude/skills/discovery-skill
 ```
 
-**Project-level** (available in one project):
+### OpenCode
+
+Copy or clone this repository into your OpenCode skills directory:
 
 ```bash
-git clone https://github.com/abdielou/discovery-skill.git .claude/skills/discovery-skill
+# macOS/Linux
+git clone https://github.com/abdielou/discovery-skill.git ~/.agents/skills/discovery-skill
+
+# Windows
+git clone https://github.com/abdielou/discovery-skill.git %USERPROFILE%\.agents\skills\discovery-skill
 ```
+
+Or place it in the project-level skills directory if your OpenCode setup supports it.
 
 ### Local development
 
@@ -56,6 +56,8 @@ claude --plugin-dir ./path/to/discovery-skill
 ```
 
 ## Usage
+
+### Claude Code
 
 ```
 /discovery <topic or context>
@@ -75,6 +77,35 @@ claude --plugin-dir ./path/to/discovery-skill
 /discovery billing-api            # reads existing notes and picks up where you left off
 ```
 
+### OpenCode
+
+The skill activates automatically when you use phrases like:
+- "discovery session"
+- "let's explore"
+- "facilitated discussion"
+- "help me think through"
+- "compact notes" (for organizing existing discovery notes)
+
+Or explicitly load it:
+
+```
+Load the discovery skill
+```
+
+**Examples:**
+
+```
+Let's do a discovery session on the API redesign for the billing module.
+```
+
+```
+Help me think through the new onboarding flow. Here's the wireframe...
+```
+
+```
+Compact the notes for billing-api discovery
+```
+
 ## How it works
 
 1. **Design intent** — establishes the north-star goal
@@ -88,18 +119,27 @@ All decisions, assumptions, and context are captured in `.planning/discovery/{to
 
 ## Repository structure
 
+### OpenCode layout
+
 ```
 discovery-skill/
-├── .claude-plugin/
-│   ├── plugin.json            # Plugin metadata and command registration
-│   └── marketplace.json       # Marketplace distribution config
-├── skills/
+├── SKILL.md                          # Main skill definition
+├── references/
+│   ├── notes-format.md              # Notes file structure and bucket definitions
+│   ├── facilitation-playbook.md     # Facilitation techniques
+│   ├── agent-orchestration.md       # Background agent patterns
+│   └── compact-notes.md             # Note compaction instructions
+├── .claude-plugin/                   # Claude Code plugin metadata
+│   ├── plugin.json
+│   └── marketplace.json
+├── skills/                           # Claude Code skill files
 │   ├── discovery/
-│   │   └── discovery.md       # Main skill definition
+│   │   ├── discovery.md
+│   │   └── compact-notes.md
 │   └── _shared/
-│       ├── notes-format.md    # Notes file structure and bucket definitions
-│       ├── facilitation-playbook.md  # Facilitation techniques
-│       └── agent-orchestration.md    # Background agent patterns
+│       ├── notes-format.md
+│       ├── facilitation-playbook.md
+│       └── agent-orchestration.md
 ├── .gitignore
 └── README.md
 ```
