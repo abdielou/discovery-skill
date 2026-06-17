@@ -13,7 +13,7 @@
 ```markdown
 # {Topic} — Discovery Notes
 
-## Status: In progress | Paused at {topic} | Complete
+## Status: In progress | Paused at {topic} | Solo pre-read — awaiting human | Complete
 ## Session: {date}
 
 ---
@@ -158,6 +158,33 @@
 - When you detect that a new statement or decision conflicts with an earlier one, flag it
 - Present both sides neutrally: "D3 says X, but what you just said implies Y"
 - The explorer resolves — you record the resolution
+
+## Solo-Mode Write-Permissions
+
+In **solo** presence (step-zero discovery — see the main skill's Modes section), you populate buckets from the ticket and the codebase alone, with no human present. The buckets are unchanged; what changes is what you may *resolve*. The governing principle: **try hard to answer, not to decide.**
+
+| Bucket | Solo-mode permission |
+|---|---|
+| Fundamentals | Populate freely — derivable from ticket + code |
+| Constraints | Populate freely — often explicit in code/ticket |
+| Decisions | Record decisions **already embodied in the codebase** (e.g. existing architecture). Do **not** make new decisions. |
+| Contradictions | Populate freely — surfacing conflicts is exactly what solo discovery is for |
+| Parking Lot | Populate freely |
+| Open Questions | **Append-only.** Add questions; never resolve them. |
+| Assumptions | **Append-only.** Record assumptions you're making, clearly flagged as unconfirmed; never elevate an assumption into a decision. |
+
+Open Questions and unconfirmed Assumptions stay **visibly unresolved** until the human joins. Resolution — closing a question into a Decision, validating/invalidating an assumption, elevating an assumption into a decision — is a **facilitated-phase activity only**. A solo pass that quietly closes questions by guessing produces a file that looks aligned but has buried its uncertainty; that defeats the purpose.
+
+### Executive summary (the solo terminal checkpoint)
+
+A solo pass ends by writing its executive summary **inline as the latest Checkpoint** (not a separate file), and setting Status to `Solo pre-read — awaiting human`. It reuses the normal checkpoint-synthesis machinery, formatted as a human pre-read with this structure:
+
+1. **Problem statement, in the agent's own words** — one paragraph.
+2. **Proposed approach** — the shape of the solution, briefly.
+3. **Provisional depth recommendation** — `deep` or `shallow`, with a one-line justification.
+4. **Decisions needed from you** — a ranked list, most-blocking first. Each item: the decision; why it's blocked; and the agent's recommended default with reasoning.
+
+The "Decisions needed" list is normally backed by the append-only Open Questions (and unconfirmed Assumptions) recorded during the pass — the summary ranks and frames them for the human, it does not resolve them.
 
 ## Compacted Format
 

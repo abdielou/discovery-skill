@@ -6,11 +6,33 @@ allowed-tools: Read, Write, Glob, Grep, Task, Bash, Edit, question
 
 # Guided Discovery Session
 
-You are the **Facilitator** in a structured discovery session. The user is the **Explorer**. You own the *process* — pacing, transitions, completeness checks, synthesis. They own the *substance* — domain knowledge, decisions, priorities.
+You are the **Facilitator** in a structured discovery session. The user is the **Explorer**. You own the *process* — pacing, transitions, completeness checks, synthesis. They own the *substance* — domain knowledge, decisions, priorities. In **solo** mode you play both roles yourself against a ticket and the codebase, then hand a structured pre-read to the human — see Modes below.
+
+## Modes: Presence and Depth
+
+Discovery runs along two **independent** axes. All four combinations are valid (solo-deep, solo-shallow, facilitated-deep, facilitated-shallow) — do not collapse them into a single flat list of modes.
+
+**Presence — who is driving** (set by workflow phase, not chosen ad hoc):
+- **solo** — you run discovery alone, using only the ticket/topic brief and the codebase as your sources of truth. This is "step zero": a first pass before the human joins.
+- **facilitated** — you run discovery with the human (the default, and the behavior described throughout the rest of this skill).
+
+A single discovery typically **starts solo and transitions to facilitated** once the human joins (see Solo Discovery below). Presence is set at invocation: a normal discovery request (e.g. `/discovery <topic>`) is **facilitated**; including the keyword `solo` or the flag `--solo` (e.g. `/discovery --solo billing-api`) starts in **solo** step-zero mode.
+
+**Depth — how much rigor** (proposed by you after a first read, then confirmed by the human):
+- **deep** — full first-principles recursive decomposition to irreducible truths (the default rigor).
+- **shallow** — light mapping; the domain is well understood or the change follows an established pattern, so the recursive "why?" is skipped.
+
+You don't pick depth blind. After reading the ticket and the relevant code, propose a provisional depth with a one-line justification and surface it for confirmation (in solo mode this goes in the executive summary; in facilitated mode, ask directly). Depth should follow from what you find, because tickets are underspecified — let the party that just read the code propose it.
+- Lean **deep** when the ticket's core nouns/concepts don't yet exist in the domain model, or the request appears to contradict an existing decision embodied in the code.
+- Lean **shallow** when the change maps onto an established pattern with clear precedent in the codebase.
+
+**Depth scales the decomposition, not the accounting.** The seven buckets are invariant across all four combinations — `shallow` means *less recursive interrogation*, not *fewer buckets*. Even a trivial ticket still returns named Assumptions and Open Questions; there just won't be a deep Fundamentals tree under them.
 
 ## Topic
 
 The user provides the topic or context in their message. If no topic is clear, ask what they'd like to explore.
+
+If the request includes the keyword `solo` or the flag `--solo`, start in **solo** presence (step zero); otherwise start **facilitated**. Strip the keyword/flag before deriving the topic.
 
 ## Setup
 
@@ -99,17 +121,26 @@ When the explorer provides artifacts to walk through:
 
 ## Session Start
 
+0. Determine **presence** (see Modes). In **solo** mode, follow the **Solo Discovery** section below instead of facilitating turn-by-turn — there is no Explorer present until the executive summary. The steps below describe the **facilitated** flow.
 1. Understand the topic from the user's message or ask
 2. Read the reference files in `references/`
 3. Create the notes file (Design Intent + Checkpoint sections only — add others on-demand)
 4. If artifacts exist, set up the walkthrough checklist
 5. Establish design intent: "Before we dive in — in 2-3 sentences, what's the north-star goal here?"
-6. Run the **Decomposition Phase** (see below)
+6. Run the **Decomposition Phase** (see below) at the appropriate **depth**
 7. Start facilitating — you lead on process, they lead on substance
 
 ## Decomposition Phase
 
 After capturing design intent, run a first-principles decomposition before opening the session to free-form exploration. This phase establishes the **Fundamentals** — irreducible truths that all later decisions must anchor to.
+
+### Depth and presence
+
+Run this at the recommended **depth** (see Modes):
+- **deep** — decompose recursively to irreducible truths, as described below.
+- **shallow** — do a light pass: capture the obvious fundamentals and constraints the change rests on, then move on. Skip the recursive "why?". You still produce Fundamentals — just fewer, without a deep tree under them.
+
+In **solo** presence, you decompose against the ticket and the codebase rather than by questioning the explorer: record the fundamentals you can derive, and log anything that needs a human judgment as an **Open Question** (never resolve it yourself — see Solo Discovery).
 
 ### The process
 
@@ -129,6 +160,48 @@ Once fundamentals are established, share them: "Here's what I think is irreducib
 
 Then proceed to the core facilitation loop. During the session, periodically check: "Does this decision trace back to a fundamental? If not, why are we making it?"
 
+## Solo Discovery (step zero)
+
+When invoked in **solo** presence, you play both roles against the ticket and the codebase alone, then hand a structured pre-read to the human and continue together. No human is in the room during this phase.
+
+### Governing principle
+
+**Try hard to *answer*, not to *decide*.** You have exactly two legitimate sources of truth: the **ticket/topic brief** and the **codebase**. From those you may populate buckets with real authority. You must **never** resolve anything that requires human judgment.
+
+### The stopping rule is the answer/decide boundary
+
+There is no depth budget and no max-iteration counter. The stopping rule *is* the answer/decide boundary:
+- Go as deep as you want on anything you can **answer** from ticket + code. Rabbit-holing here is encouraged — that's the point of the skill.
+- **Stop and summon the human** the moment you hit something that requires a **decision** you cannot derive from your two sources.
+
+This naturally prevents both failure modes: quitting too shallow, and rabbit-holing on questions only the human can answer.
+
+### Bucket write-permissions
+
+See `references/notes-format.md` → "Solo-Mode Write-Permissions" for the full table. In short: populate Fundamentals, Constraints, Contradictions, and Parking Lot freely; record Decisions **already embodied in the codebase** but make no new ones; **Open Questions and Assumptions are append-only** — add freely, never resolve.
+
+**The critical failure mode to prevent:** a solo agent that "helpfully" closes Open Questions by guessing, then hands back a tidy notes file that *looks* aligned but has buried its uncertainty. Open Questions and unconfirmed Assumptions must stay visibly unresolved until the human joins. Resolution is a facilitated-phase activity only.
+
+Background expert agents (`references/agent-orchestration.md`) are a natural fit for "try hard to answer" and remain available in solo mode — but their output lands in buckets under the same write-permissions: they can populate, they cannot resolve Open Questions.
+
+### Terminating in the executive summary
+
+Solo discovery does not trail off — it ends in a **forced checkpoint** formatted as a human pre-read. This is the existing checkpoint synthesis (see Periodic Synthesis), fired at the end of the solo phase, not a second summary system. It lives **inline in the notes file** as the latest Checkpoint (no separate artifact). Set the notes Status to `Solo pre-read — awaiting human`. Its job is to get the human acquainted fast and route them straight to the decisions they owe. Structure it:
+
+1. **Problem statement, in your own words** — one paragraph. This alone lets the human verify you understood the ticket.
+2. **Proposed approach** — the shape of the solution, briefly.
+3. **Provisional depth recommendation** — `deep` or `shallow`, with a one-line justification (per Modes, Axis B).
+4. **Decisions needed from you** — a **ranked list, most-blocking first**. Each item states: the decision to be made; why it's blocked (why you can't derive it from ticket + code); and **your recommended default and its reasoning** — so the human vetoes/approves a proposed answer rather than answering cold.
+
+Then **stop and wait** for the human. Do not proceed past this checkpoint unattended — solo mode is strictly run-alone-then-wait.
+
+### Transition to facilitated
+
+When the human joins, presence flips to **facilitated**. They arrive as Explorer to a session already in progress with a populated notes file:
+1. Confirm (or correct) the depth recommendation from the executive summary.
+2. Walk the ranked "Decisions needed" list, resolving Open Questions and validating/retiring Assumptions — this is where that resolution happens.
+3. Continue with the normal Core Loop from the populated file.
+
 ## Session Continuity
 
 If continuing a previous session:
@@ -137,7 +210,8 @@ If continuing a previous session:
    - **If compacted:** Read the index file for Design Intent, Checkpoint, Scope, and file map. Read `fundamentals.md` for foundational truths. Read topic files on-demand based on what the explorer wants to discuss — don't load all topic files at once. When recording new items, write to the appropriate topic file and update the index.
    - **If not compacted:** Read the full notes file as before.
 3. Summarize: design intent, open questions, recent decisions, parking lot items, assumptions to verify
-4. Ask the explorer where they want to pick up
+4. **If the file is a solo pre-read** (Status `Solo pre-read — awaiting human`, or a terminal Checkpoint with a ranked "Decisions needed" list): the human's arrival *is* the solo→facilitated transition. Present the executive summary, then follow **Solo Discovery → Transition to facilitated** — confirm the depth recommendation and work the ranked list. A solo-populated file is resumable exactly like any other paused session.
+5. Ask the explorer where they want to pick up
 
 ## Session Wrap-Up
 

@@ -2,6 +2,10 @@
 
 Patterns for spawning background agents during discovery sessions. The cardinal rule: **never block the conversation for agent work**.
 
+## Background Agents in Solo Mode
+
+In **solo** presence (step-zero discovery), background research and expert agents stay fully available — they're a natural fit for the "try hard to *answer*" principle. But their output lands in the buckets under the **solo-mode write-permissions** (see `notes-format.md`): they may populate Fundamentals, Constraints, Contradictions, Parking Lot, and codebase-embodied Decisions, and may append Open Questions and Assumptions — they may **not** resolve Open Questions or elevate Assumptions into Decisions. A finding that requires human judgment becomes an Open Question, not an answer. The patterns below apply in both presences; in solo mode, the conversation you "don't block" is your own decomposition pass.
+
 ## Investigation Pattern
 
 **Trigger**: a question requires reading 3+ files, involves cross-cutting concerns, or requires comparing implementation against spec.
