@@ -17,6 +17,7 @@ The discovery skill turns the AI into a **Facilitator** for structured thinking 
 - **Session continuity** — persistent notes file enables pause/resume across sessions
 - **Assumption hunting** — actively surfaces unstated assumptions and tracks their impact
 - **Contradiction detection** — flags conflicts between decisions in real time
+- **Simplified Technical English**: every message and every note entry follows ASD-STE100 style, adapted to the session language when the session is not in English
 - **Socrates integration** — dialectic stress-testing for deep or contentious decompositions (optional, via [zetaminusone/socrates](https://github.com/ZetaMinusOne/socrates))
 
 ### Modes (presence × depth)

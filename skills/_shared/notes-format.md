@@ -7,6 +7,7 @@
 - **Sections created on-demand** — start with Design Intent + Checkpoint only, add sections when items exist
 - **Flat within sections** — no sub-grouping; tags carry the topic signal
 - **Cold-start header** — Design Intent + latest Checkpoint always at top
+- **Simplified Technical English** in every entry: short sentences, active voice, one term for one concept (see the main discovery skill, Language and Style)
 
 ## Template
 

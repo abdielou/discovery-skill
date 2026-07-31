@@ -41,6 +41,7 @@ No facts or rules may be lost. Compaction may consolidate (merge duplicates, com
 6. **Scope** (In/Out) is preserved in the index file
 7. **Context & References** are preserved
 8. After compaction, `grep` for any item ID (e.g., `D14`) across all output files or the Consolidation Log must return a result
+9. **Restyle every item.** Rewrite each entry into ASD-STE100 Simplified Technical English: short sentences, active voice, one term for one concept. Restyling is a wording change only. Keep the facts, the item IDs, the topic tags, the metadata labels, the cross-references, and the explorer's domain terms and code identifiers exactly as they are. If a rewrite would drop or change a fact, keep the original wording
 
 ### Organization strategy
 
@@ -140,17 +141,17 @@ Write each file with clear headers and complete content. Use the formats below.
 
 ## Design Intent
 
-{preserved verbatim from original}
+{preserved from original, restyled to Simplified Technical English, no facts changed}
 
 ## Checkpoint (latest)
 
-{preserved verbatim from original}
+{preserved from original, restyled to Simplified Technical English, no facts changed}
 
 ---
 
 ## Scope
 
-{preserved verbatim from original}
+{preserved from original, restyled to Simplified Technical English, no facts changed}
 
 ---
 
@@ -282,7 +283,7 @@ For **cross-referenced items** (items whose primary tag is different), add a ref
 ```markdown
 # {Topic} — Context & References
 
-{preserved verbatim from original}
+{preserved from original, restyled to Simplified Technical English, no facts changed}
 ```
 
 #### Checkpoint Archive (`checkpoint-archive.md`)
@@ -291,7 +292,7 @@ For **cross-referenced items** (items whose primary tag is different), add a ref
 # {Topic} — Checkpoint Archive
 
 ### CP1 — {topic} — {date}
-{preserved verbatim}
+{preserved, restyled to Simplified Technical English, no facts changed}
 
 ### CP2 — ...
 ```

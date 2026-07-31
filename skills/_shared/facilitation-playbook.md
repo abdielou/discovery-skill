@@ -2,6 +2,8 @@
 
 Patterns for guiding the explorer through discovery. These are techniques, not scripts — adapt to context.
 
+Deliver all of them in ASD-STE100 Simplified Technical English (see the main discovery skill, Language and Style): short sentences, active voice, one term for one concept. Keep the explorer's own terms when you reflect back.
+
 ## Signal Extraction
 
 The explorer will think aloud. Your job is to separate:
